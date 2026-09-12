@@ -1,27 +1,25 @@
 /* ==========================================================================
    Kevin Hu, kevinhu-math.github.io
-   Concept: blackboard above, paper below. The interactive triangle-centres
-   figure owns the top of the page with nothing over it; the writing lives on
-   a clean sheet underneath.
+   Paper for the writing, chalkboard for the geometry lab.
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap');
 
 :root {
-  --board:       #22332f;   /* chalkboard slate green */
-  --board-deep:  #1a2825;
-  --chalk:       #eef2ea;
-  --chalk-dim:   #a9b8b1;
-  --chalk-cyan:  #8fd3e8;
-  --chalk-rose:  #f2a49c;
-  --chalk-gold:  #f2d98d;
+  --paper:      #f7f6f2;
+  --sheet:      #ffffff;
+  --ink:        #1b2a2e;
+  --ink-soft:   #4a5b5f;
+  --hair:       #dfe2dc;
+  --accent:     #16706b;
 
-  --paper:       #f7f6f2;
-  --sheet:       #ffffff;
-  --ink:         #1b2a2e;
-  --ink-soft:    #4a5b5f;
-  --hair:        #dfe2dc;
-  --accent:      #16706b;
+  --board:      #22332f;
+  --board-deep: #1a2825;
+  --chalk:      #eef2ea;
+  --chalk-dim:  #a9b8b1;
+  --chalk-cyan: #8fd3e8;
+  --chalk-rose: #f2a49c;
+  --chalk-gold: #f2d98d;
 
   --display: 'Instrument Serif', Georgia, serif;
   --body:    'Karla', system-ui, sans-serif;
@@ -51,156 +49,12 @@ body {
 }
 
 a:focus-visible, button:focus-visible, canvas:focus-visible {
-  outline: 2px solid var(--chalk-cyan);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
 /* ==========================================================================
-   THE BOARD
-   ========================================================================== */
-
-.board {
-  position: relative;
-  height: min(94vh, 900px);
-  min-height: 560px;
-  background: var(--board);
-  /* faint chalk dust, so the slate is not a flat block of colour */
-  background-image:
-    radial-gradient(ellipse at 22% 28%, rgba(238,242,234,0.05), transparent 55%),
-    radial-gradient(ellipse at 78% 76%, rgba(238,242,234,0.04), transparent 55%);
-  overflow: hidden;
-}
-
-#figure {
-  position: absolute;
-  inset: 0;
-  display: block;
-  touch-action: none;      /* so dragging a vertex does not scroll the page */
-}
-
-.board-name {
-  position: absolute;
-  top: clamp(24px, 5vh, 56px);
-  left: clamp(20px, 5vw, 64px);
-  z-index: 2;
-  pointer-events: none;
-  max-width: 30ch;
-}
-.board-name h1 {
-  margin: 0;
-  font-family: var(--display);
-  font-weight: 400;
-  font-size: clamp(3rem, 8vw, 5.4rem);
-  line-height: 0.95;
-  color: var(--chalk);
-}
-.board-name p {
-  margin: 14px 0 0;
-  color: var(--chalk-dim);
-  font-size: 1rem;
-  line-height: 1.6;
-}
-.board-name .hint {
-  margin-top: 18px;
-  color: var(--chalk-cyan);
-  font-size: 0.9rem;
-}
-.board-name kbd {
-  font-family: var(--body);
-  font-size: 0.85em;
-  padding: 1px 6px;
-  border: 1px solid rgba(238,242,234,0.3);
-  border-radius: 3px;
-}
-
-/* layer switches, bottom left */
-.layers {
-  position: absolute;
-  left: clamp(20px, 5vw, 64px);
-  bottom: clamp(20px, 4vh, 44px);
-  z-index: 2;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  max-width: min(560px, 70vw);
-}
-.layers button {
-  font-family: var(--body);
-  font-size: 0.85rem;
-  color: var(--chalk-dim);
-  background: transparent;
-  border: 1px solid rgba(238,242,234,0.22);
-  border-radius: 999px;
-  padding: 6px 14px;
-  cursor: pointer;
-  transition: color 160ms, border-color 160ms, background 160ms;
-}
-.layers button:hover { color: var(--chalk); border-color: rgba(238,242,234,0.5); }
-.layers button[aria-pressed="true"] {
-  color: var(--board);
-  background: var(--chalk);
-  border-color: var(--chalk);
-}
-.layers button#reset { margin-left: 6px; font-style: italic; }
-
-/* the numbers, top right */
-.readout {
-  position: absolute;
-  top: clamp(24px, 5vh, 56px);
-  right: clamp(20px, 5vw, 64px);
-  z-index: 2;
-  margin: 0;
-  padding: 20px 24px;
-  min-width: 260px;
-  border: 1px solid rgba(238,242,234,0.18);
-  border-radius: 6px;
-  background: rgba(26,40,37,0.55);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-  color: var(--chalk-dim);
-  font-size: 0.92rem;
-  line-height: 1.5;
-}
-.readout h2 {
-  margin: 0 0 12px;
-  font-family: var(--display);
-  font-weight: 400;
-  font-size: 1.15rem;
-  color: var(--chalk);
-}
-.readout .row {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 3px 0;
-}
-.readout .row span:first-child { font-family: var(--display); font-style: italic; font-size: 1.05rem; color: var(--chalk); }
-.readout .row span:last-child { font-variant-numeric: tabular-nums; }
-.readout .note {
-  margin: 12px 0 0;
-  padding-top: 12px;
-  border-top: 1px solid rgba(238,242,234,0.15);
-  font-size: 0.84rem;
-  color: var(--chalk-dim);
-}
-.readout .note em { color: var(--chalk-cyan); font-style: normal; }
-
-/* scroll cue */
-.cue {
-  position: absolute;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
-  z-index: 2;
-  color: var(--chalk-dim);
-  text-decoration: none;
-  font-size: 0.85rem;
-  border-bottom: 1px solid transparent;
-}
-.cue:hover { color: var(--chalk); border-bottom-color: var(--chalk); }
-
-/* ==========================================================================
-   THE PAPER
+   NAVIGATION
    ========================================================================== */
 
 nav {
@@ -233,12 +87,26 @@ nav {
   transform: scaleX(0); transform-origin: left;
   transition: transform 240ms ease;
 }
-.nav-links a:hover::after, .nav-links a:focus-visible::after { transform: scaleX(1); }
+.nav-links a:hover::after,
+.nav-links a:focus-visible::after,
+.nav-links a[aria-current="page"]::after { transform: scaleX(1); }
+
+/* ==========================================================================
+   PAPER PAGES
+   ========================================================================== */
 
 .container {
   max-width: 940px;
   margin: 0 auto;
-  padding: 72px 28px 110px;
+  padding: 64px 28px 110px;
+}
+
+h1 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(3rem, 7vw, 4.4rem);
+  line-height: 1;
+  margin: 0 0 0.5rem;
 }
 
 h2 {
@@ -250,7 +118,6 @@ h2 {
   padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--hair);
 }
-.container > h2:first-child { margin-top: 0; }
 
 h3 {
   font-family: var(--display);
@@ -259,6 +126,7 @@ h3 {
   line-height: 1.2;
   margin: 0 0 0.5rem;
 }
+
 h4 {
   font-family: var(--display);
   font-style: italic;
@@ -270,6 +138,7 @@ h4 {
 
 p { max-width: var(--measure); margin: 0 0 1.1em; color: var(--ink-soft); }
 p em { color: var(--ink); }
+.lede { font-size: 1.15rem; }
 
 .card {
   position: relative;
@@ -292,6 +161,23 @@ p em { color: var(--ink); }
   border: 1px solid var(--hair);
   box-shadow: 0 14px 32px -20px rgba(27,42,46,0.6);
 }
+
+/* the one card that advertises the lab, in board colours */
+.card.board-card {
+  background: var(--board);
+  border-color: var(--board-deep);
+  border-left-color: var(--chalk-cyan);
+}
+.card.board-card h3 { color: var(--chalk); }
+.card.board-card p { color: var(--chalk-dim); }
+.card.board-card p em { color: var(--chalk); }
+.card.board-card .btn {
+  color: var(--board);
+  background: var(--chalk);
+  border-color: var(--chalk);
+}
+.card.board-card .btn::before { background: var(--chalk-cyan); }
+.card.board-card .btn:hover { color: var(--board); border-color: var(--chalk-cyan); }
 
 a.btn {
   position: relative;
@@ -332,14 +218,146 @@ a.btn:hover::before, a.btn:focus-visible::before { transform: scaleX(1); }
 }
 
 /* ==========================================================================
+   THE GEOMETRY LAB  (geometry.html only)
+   ========================================================================== */
+
+.board {
+  position: relative;
+  height: calc(100vh - 52px);
+  min-height: 600px;
+  background: var(--board);
+  background-image:
+    radial-gradient(ellipse at 22% 28%, rgba(238,242,234,0.05), transparent 55%),
+    radial-gradient(ellipse at 78% 76%, rgba(238,242,234,0.04), transparent 55%);
+  overflow: hidden;
+}
+
+#figure {
+  position: absolute;
+  inset: 0;
+  display: block;
+  touch-action: none;   /* dragging a vertex must not scroll the page */
+}
+
+.board-title {
+  position: absolute;
+  top: clamp(20px, 4vh, 44px);
+  left: clamp(20px, 5vw, 56px);
+  z-index: 2;
+  pointer-events: none;
+  max-width: 32ch;
+}
+.board-title h1 { color: var(--chalk); font-size: clamp(2.4rem, 5vw, 3.6rem); margin: 0; }
+.board-title p { color: var(--chalk-dim); margin: 12px 0 0; font-size: 0.98rem; }
+.board-title .hint { color: var(--chalk-cyan); margin-top: 14px; font-size: 0.9rem; }
+.board-title kbd {
+  font-family: var(--body);
+  font-size: 0.85em;
+  padding: 1px 6px;
+  border: 1px solid rgba(238,242,234,0.3);
+  border-radius: 3px;
+}
+
+.layers {
+  position: absolute;
+  left: clamp(20px, 5vw, 56px);
+  bottom: clamp(20px, 4vh, 40px);
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: min(560px, 70vw);
+}
+.layers button {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  color: var(--chalk-dim);
+  background: transparent;
+  border: 1px solid rgba(238,242,234,0.22);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: color 160ms, border-color 160ms, background 160ms;
+}
+.layers button:hover { color: var(--chalk); border-color: rgba(238,242,234,0.5); }
+.layers button[aria-pressed="true"] {
+  color: var(--board);
+  background: var(--chalk);
+  border-color: var(--chalk);
+}
+.layers button#reset { font-style: italic; }
+.layers button:focus-visible { outline-color: var(--chalk-cyan); }
+
+.readout {
+  position: absolute;
+  top: clamp(20px, 4vh, 44px);
+  right: clamp(20px, 5vw, 56px);
+  z-index: 2;
+  margin: 0;
+  padding: 20px 24px;
+  min-width: 270px;
+  border: 1px solid rgba(238,242,234,0.18);
+  border-radius: 4px;
+  background: rgba(26,40,37,0.6);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  color: var(--chalk-dim);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.readout h2 {
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.15rem;
+  color: var(--chalk);
+}
+.readout .row { display: flex; justify-content: space-between; gap: 20px; padding: 3px 0; }
+.readout .row span:first-child {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--chalk);
+}
+.readout .row span:last-child { font-variant-numeric: tabular-nums; }
+.readout .note {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  max-width: none;
+  border-top: 1px solid rgba(238,242,234,0.15);
+  font-size: 0.84rem;
+  color: var(--chalk-dim);
+}
+.readout .note em { color: var(--chalk-cyan); font-style: normal; }
+
+.cue {
+  position: absolute;
+  left: 50%; bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 2;
+  color: var(--chalk-dim);
+  text-decoration: none;
+  font-size: 0.85rem;
+  border-bottom: 1px solid transparent;
+}
+.cue:hover { color: var(--chalk); border-bottom-color: var(--chalk); }
+
+/* key to the colours, on the paper below the board */
+.key { list-style: none; padding: 0; margin: 0 0 1.4em; max-width: var(--measure); }
+.key li { display: flex; gap: 12px; align-items: baseline; padding: 5px 0; color: var(--ink-soft); }
+.key .swatch { flex: 0 0 26px; height: 3px; border-radius: 2px; transform: translateY(-4px); }
+
+/* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 
-@media (max-width: 900px) {
+@media (max-width: 980px) {
   .readout {
     top: auto;
-    bottom: clamp(84px, 16vh, 130px);
-    right: clamp(16px, 5vw, 40px);
+    bottom: clamp(80px, 15vh, 120px);
+    right: clamp(16px, 5vw, 36px);
     min-width: 0;
     padding: 14px 16px;
     font-size: 0.84rem;
@@ -347,14 +365,14 @@ a.btn:hover::before, a.btn:focus-visible::before { transform: scaleX(1); }
   .readout .note { display: none; }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 660px) {
   .board { height: auto; min-height: 0; }
-  #figure { position: relative; height: 62vh; }
-  .board-name { position: static; padding: 28px 20px 0; max-width: none; }
+  #figure { position: relative; height: 60vh; }
+  .board-title { position: static; padding: 26px 20px 0; max-width: none; }
   .readout { position: static; margin: 18px 20px 0; }
   .layers { position: static; padding: 18px 20px 26px; max-width: none; }
   .cue { display: none; }
-  .container { padding: 48px 20px 80px; }
+  .container { padding: 44px 20px 80px; }
   .card { padding: 24px 22px; }
   a.btn { display: block; margin-right: 0; text-align: center; }
 }
