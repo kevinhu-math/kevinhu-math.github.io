@@ -34,10 +34,12 @@
   resize();
 
   // Three vertices. Each drifts on its own slow Lissajous path around a home point.
+  // Home points sit in the margins either side of the 900px sheet, so the
+  // vertices and the circles stay visible and only the edges pass under it.
   const verts = [
-    { hx: 0.18, hy: 0.30, ax: 0.05, ay: 0.06, fx: 0.00021, fy: 0.00017, p: 0.0, x: 0, y: 0 },
-    { hx: 0.82, hy: 0.22, ax: 0.05, ay: 0.06, fx: 0.00018, fy: 0.00023, p: 2.1, x: 0, y: 0 },
-    { hx: 0.55, hy: 0.86, ax: 0.07, ay: 0.05, fx: 0.00016, fy: 0.00020, p: 4.2, x: 0, y: 0 }
+    { hx: 0.08, hy: 0.22, ax: 0.04, ay: 0.08, fx: 0.00021, fy: 0.00017, p: 0.0, x: 0, y: 0 },
+    { hx: 0.93, hy: 0.30, ax: 0.04, ay: 0.08, fx: 0.00018, fy: 0.00023, p: 2.1, x: 0, y: 0 },
+    { hx: 0.12, hy: 0.90, ax: 0.06, ay: 0.05, fx: 0.00016, fy: 0.00020, p: 4.2, x: 0, y: 0 }
   ];
 
   const mouse = { x: -1e9, y: -1e9, active: false };
@@ -124,20 +126,20 @@
 
     const A = verts[0], B = verts[1], C = verts[2];
     ctx.clearRect(0, 0, W, H);
-    ctx.globalAlpha = 0.55;
+    ctx.globalAlpha = 0.8;
 
     // triangle
-    segment(A, B, ink, 1); segment(B, C, ink, 1); segment(C, A, ink, 1);
+    segment(A, B, ink, 1.4); segment(B, C, ink, 1.4); segment(C, A, ink, 1.4);
 
     const O = circumcentre(A, B, C);
     if (O) {
       const R = dist(O, A);
-      circle(O, R, ink, 0.8);
+      circle(O, R, ink, 1.1);
 
       // orthocentre and nine-point centre
       const Hp = { x: A.x + B.x + C.x - 2 * O.x, y: A.y + B.y + C.y - 2 * O.y };
       const N = { x: (O.x + Hp.x) / 2, y: (O.y + Hp.y) / 2 };
-      circle(N, R / 2, rule, 1, [5, 6]);
+      circle(N, R / 2, rule, 1.3, [5, 6]);
 
       // Euler line, extended a little beyond O and H
       const ex = Hp.x - O.x, ey = Hp.y - O.y;
@@ -150,7 +152,7 @@
       const s = (a + b + c) / 2;
       const I = { x: (a * A.x + b * B.x + c * C.x) / (2 * s), y: (a * A.y + b * B.y + c * C.y) / (2 * s) };
       const area = Math.abs((B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y)) / 2;
-      circle(I, area / s, pencil, 1.2);
+      circle(I, area / s, pencil, 1.6);
 
       ctx.globalAlpha = 0.85;
       dot(O, ink, 2.5); label(O, 'O', ink, 7, -6);
