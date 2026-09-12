@@ -128,7 +128,10 @@ nav {
   max-width: 900px;
   margin: 56px auto 96px;
   padding: 56px 64px;
-  background: var(--sheet);
+  /* frosted, not opaque: the geometry drawn by geometry.js reads through it */
+  background: color-mix(in srgb, var(--sheet) 78%, transparent);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   border: 1px solid var(--grid-major);
   border-radius: var(--radius-m);
   box-shadow:
@@ -203,7 +206,7 @@ p em { font-style: italic; color: var(--ink); }
   position: relative;
   margin: 0 0 28px;
   padding: 30px 34px;
-  background: var(--sheet);
+  background: color-mix(in srgb, var(--sheet) 70%, transparent);
   border: 1px solid var(--grid-major);
   border-radius: var(--radius-s);
   overflow: hidden;
