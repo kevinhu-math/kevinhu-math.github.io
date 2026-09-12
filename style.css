@@ -1,308 +1,364 @@
 /* ==========================================================================
    Kevin Hu, kevinhu-math.github.io
-   Theme: "the construction sheet". Graph paper, ink, and construction lines.
-   A live triangle with its incircle, circumcircle, nine-point circle and
-   Euler line is drawn behind the page by geometry.js and follows the cursor.
+   Concept: blackboard above, paper below. The interactive triangle-centres
+   figure owns the top of the page with nothing over it; the writing lives on
+   a clean sheet underneath.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap');
 
-/* ---------- tokens ---------- */
 :root {
-  --paper:      #f6f7f4;   /* page, a cool off-white, not cream */
-  --sheet:      #ffffff;   /* the container */
-  --grid:       rgba(20, 33, 61, 0.07);
-  --grid-major: rgba(20, 33, 61, 0.13);
-  --ink:        #14213d;   /* navy ink for headings and body */
-  --ink-soft:   #3b4763;
-  --rule:       #0e7c86;   /* teal construction line, the primary accent */
-  --rule-soft:  rgba(14, 124, 134, 0.14);
-  --pencil:     #b23a2f;   /* pencil red, reserved for the incircle only */
-  --radius-s:   4px;
-  --radius-m:   10px;
-  --measure:    68ch;
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body:    'IBM Plex Sans', system-ui, sans-serif;
+  --board:       #22332f;   /* chalkboard slate green */
+  --board-deep:  #1a2825;
+  --chalk:       #eef2ea;
+  --chalk-dim:   #a9b8b1;
+  --chalk-cyan:  #8fd3e8;
+  --chalk-rose:  #f2a49c;
+  --chalk-gold:  #f2d98d;
+
+  --paper:       #f7f6f2;
+  --sheet:       #ffffff;
+  --ink:         #1b2a2e;
+  --ink-soft:    #4a5b5f;
+  --hair:        #dfe2dc;
+  --accent:      #16706b;
+
+  --display: 'Instrument Serif', Georgia, serif;
+  --body:    'Karla', system-ui, sans-serif;
+  --measure: 66ch;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper:      #0f1524;
-    --sheet:      #151d31;
-    --grid:       rgba(214, 224, 240, 0.06);
-    --grid-major: rgba(214, 224, 240, 0.11);
-    --ink:        #e7ebf3;
-    --ink-soft:   #b3bccf;
-    --rule:       #4fc3cd;
-    --rule-soft:  rgba(79, 195, 205, 0.16);
-    --pencil:     #ef7d72;
+    --paper: #131b1c;
+    --sheet: #1a2426;
+    --ink: #e8ede9;
+    --ink-soft: #adbcb8;
+    --hair: #2c3a3c;
+    --accent: #57c2b8;
   }
 }
 
-/* ---------- base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  min-height: 100vh;
-  font-family: var(--font-body);
+  font-family: var(--body);
   font-size: 1.05rem;
-  line-height: 1.65;
+  line-height: 1.7;
   color: var(--ink);
-  background-color: var(--paper);
-  /* graph paper: fine 24px grid, heavier line every 120px */
-  background-image:
-    linear-gradient(var(--grid-major) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
-  background-position: -1px -1px;
+  background: var(--paper);
 }
 
-/* the two geometry canvases, injected by geometry.js.
-   #geo-back sits under the sheet, #geo-front draws faintly over it. */
-#geo-back, #geo-front {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-::selection { background: var(--rule-soft); color: var(--ink); }
-
-a:focus-visible, button:focus-visible {
-  outline: 2px solid var(--rule);
+a:focus-visible, button:focus-visible, canvas:focus-visible {
+  outline: 2px solid var(--chalk-cyan);
   outline-offset: 3px;
 }
 
-/* ---------- navigation ---------- */
+/* ==========================================================================
+   THE BOARD
+   ========================================================================== */
+
+.board {
+  position: relative;
+  height: min(94vh, 900px);
+  min-height: 560px;
+  background: var(--board);
+  /* faint chalk dust, so the slate is not a flat block of colour */
+  background-image:
+    radial-gradient(ellipse at 22% 28%, rgba(238,242,234,0.05), transparent 55%),
+    radial-gradient(ellipse at 78% 76%, rgba(238,242,234,0.04), transparent 55%);
+  overflow: hidden;
+}
+
+#figure {
+  position: absolute;
+  inset: 0;
+  display: block;
+  touch-action: none;      /* so dragging a vertex does not scroll the page */
+}
+
+.board-name {
+  position: absolute;
+  top: clamp(24px, 5vh, 56px);
+  left: clamp(20px, 5vw, 64px);
+  z-index: 2;
+  pointer-events: none;
+  max-width: 30ch;
+}
+.board-name h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(3rem, 8vw, 5.4rem);
+  line-height: 0.95;
+  color: var(--chalk);
+}
+.board-name p {
+  margin: 14px 0 0;
+  color: var(--chalk-dim);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.board-name .hint {
+  margin-top: 18px;
+  color: var(--chalk-cyan);
+  font-size: 0.9rem;
+}
+.board-name kbd {
+  font-family: var(--body);
+  font-size: 0.85em;
+  padding: 1px 6px;
+  border: 1px solid rgba(238,242,234,0.3);
+  border-radius: 3px;
+}
+
+/* layer switches, bottom left */
+.layers {
+  position: absolute;
+  left: clamp(20px, 5vw, 64px);
+  bottom: clamp(20px, 4vh, 44px);
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: min(560px, 70vw);
+}
+.layers button {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  color: var(--chalk-dim);
+  background: transparent;
+  border: 1px solid rgba(238,242,234,0.22);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: color 160ms, border-color 160ms, background 160ms;
+}
+.layers button:hover { color: var(--chalk); border-color: rgba(238,242,234,0.5); }
+.layers button[aria-pressed="true"] {
+  color: var(--board);
+  background: var(--chalk);
+  border-color: var(--chalk);
+}
+.layers button#reset { margin-left: 6px; font-style: italic; }
+
+/* the numbers, top right */
+.readout {
+  position: absolute;
+  top: clamp(24px, 5vh, 56px);
+  right: clamp(20px, 5vw, 64px);
+  z-index: 2;
+  margin: 0;
+  padding: 20px 24px;
+  min-width: 260px;
+  border: 1px solid rgba(238,242,234,0.18);
+  border-radius: 6px;
+  background: rgba(26,40,37,0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  color: var(--chalk-dim);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.readout h2 {
+  margin: 0 0 12px;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.15rem;
+  color: var(--chalk);
+}
+.readout .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 3px 0;
+}
+.readout .row span:first-child { font-family: var(--display); font-style: italic; font-size: 1.05rem; color: var(--chalk); }
+.readout .row span:last-child { font-variant-numeric: tabular-nums; }
+.readout .note {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(238,242,234,0.15);
+  font-size: 0.84rem;
+  color: var(--chalk-dim);
+}
+.readout .note em { color: var(--chalk-cyan); font-style: normal; }
+
+/* scroll cue */
+.cue {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 2;
+  color: var(--chalk-dim);
+  text-decoration: none;
+  font-size: 0.85rem;
+  border-bottom: 1px solid transparent;
+}
+.cue:hover { color: var(--chalk); border-bottom-color: var(--chalk); }
+
+/* ==========================================================================
+   THE PAPER
+   ========================================================================== */
+
 nav {
   position: sticky;
   top: 0;
-  z-index: 20;
-  background: color-mix(in srgb, var(--sheet) 82%, transparent);
+  z-index: 30;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--grid-major);
+  border-bottom: 1px solid var(--hair);
 }
-
 .nav-links {
-  max-width: 900px;
+  max-width: 940px;
   margin: 0 auto;
-  padding: 14px 24px;
+  padding: 13px 28px;
   display: flex;
-  gap: 36px;
+  gap: 32px;
 }
-
 .nav-links a {
   position: relative;
-  text-decoration: none;
   color: var(--ink);
+  text-decoration: none;
   font-weight: 500;
-  font-size: 1rem;
-  padding: 4px 0;
+  padding: 3px 0;
 }
-
-/* underline drawn like a ruler stroke, from left to right */
 .nav-links a::after {
   content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: -2px;
-  height: 2px;
-  background: var(--rule);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 260ms ease;
+  position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 2px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 240ms ease;
 }
-.nav-links a:hover::after,
-.nav-links a:focus-visible::after { transform: scaleX(1); }
+.nav-links a:hover::after, .nav-links a:focus-visible::after { transform: scaleX(1); }
 
-/* ---------- the sheet ---------- */
 .container {
-  position: relative;
-  z-index: 1;
-  max-width: 900px;
-  margin: 56px auto 96px;
-  padding: 56px 64px;
-  /* the front canvas draws over this, so the sheet stays readable */
-  background: color-mix(in srgb, var(--sheet) 88%, transparent);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  border: 1px solid var(--grid-major);
-  border-radius: var(--radius-m);
-  box-shadow:
-    0 1px 0 var(--grid-major),
-    0 24px 60px -30px rgba(20, 33, 61, 0.35);
-}
-
-/* corner tick marks, like registration marks on a drawing sheet */
-.container::before,
-.container::after {
-  content: '';
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border-color: var(--rule);
-  border-style: solid;
-  border-width: 0;
-  pointer-events: none;
-}
-.container::before { top: 14px; left: 14px; border-top-width: 1.5px; border-left-width: 1.5px; }
-.container::after  { bottom: 14px; right: 14px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
-
-/* ---------- typography ---------- */
-h1, h2, h3, h4 {
-  font-family: var(--font-display);
-  font-weight: 600;
-  line-height: 1.15;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-}
-
-h1 {
-  font-size: clamp(2.6rem, 6vw, 3.6rem);
-  font-variation-settings: 'opsz' 144;
-  margin: 0 0 0.35em;
-  padding-bottom: 0.3em;
-  /* a compass-arc flourish under the name */
-  background:
-    radial-gradient(circle at 0 100%, transparent 58px, var(--rule) 58px, var(--rule) 60px, transparent 60px)
-    no-repeat left bottom / 120px 60px;
-  border-bottom: 1px solid var(--grid-major);
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 72px 28px 110px;
 }
 
 h2 {
-  font-size: 1.9rem;
-  margin: 2.6em 0 0.8em;
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 2.7rem);
+  line-height: 1.1;
+  margin: 3rem 0 1.2rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--hair);
 }
-/* a short construction line leads into each section heading */
-h2::before {
-  content: '';
-  flex: 0 0 28px;
-  height: 1.5px;
-  background: var(--rule);
-  transform: translateY(-0.35em);
+.container > h2:first-child { margin-top: 0; }
+
+h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 1.2;
+  margin: 0 0 0.5rem;
 }
-
-h3 { font-size: 1.35rem; margin: 0 0 0.4em; }
-h4 { font-size: 1.05rem; margin: 1.6em 0 0.4em; font-style: italic; font-weight: 400; color: var(--ink-soft); }
-
-p {
-  max-width: var(--measure);
-  margin: 0 0 1.1em;
+h4 {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.2rem;
+  margin: 1.8rem 0 0.4rem;
   color: var(--ink-soft);
 }
-p em { font-style: italic; color: var(--ink); }
 
-/* ---------- cards ---------- */
+p { max-width: var(--measure); margin: 0 0 1.1em; color: var(--ink-soft); }
+p em { color: var(--ink); }
+
 .card {
   position: relative;
-  margin: 0 0 28px;
-  padding: 30px 34px;
-  background: color-mix(in srgb, var(--sheet) 62%, transparent);
-  border: 1px solid var(--grid-major);
-  border-radius: var(--radius-s);
-  overflow: hidden;
-  transition: border-color 220ms ease;
+  margin: 0 0 22px;
+  padding: 32px 36px;
+  background: var(--sheet);
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  border-left: 3px solid var(--accent);
+  transition: box-shadow 220ms ease, transform 220ms ease;
 }
-
-/* a compass arc faintly drawn in the corner; it completes on hover */
-.card::before {
-  content: '';
-  position: absolute;
-  top: -70px;
-  right: -70px;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  border: 1.5px solid var(--rule);
-  opacity: 0.18;
-  clip-path: polygon(0 0, 0 0, 0 0);
-  transition: clip-path 420ms ease, opacity 220ms ease;
-  pointer-events: none;
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px -28px rgba(27,42,46,0.55);
 }
-.card:hover { border-color: var(--rule); }
-.card:hover::before {
-  opacity: 0.45;
-  clip-path: polygon(0 100%, 0 0, 100% 0, 100% 100%);
-}
-
 .card img {
-  max-width: 250px;
+  max-width: 240px;
   display: block;
-  margin: 22px auto;
-  border: 1px solid var(--grid-major);
-  box-shadow: 0 12px 30px -16px rgba(20, 33, 61, 0.5);
-  transform: rotate(-1.2deg);
-  transition: transform 300ms ease;
+  margin: 24px auto;
+  border: 1px solid var(--hair);
+  box-shadow: 0 14px 32px -20px rgba(27,42,46,0.6);
 }
-.card:hover img { transform: rotate(0deg); }
 
-/* ---------- buttons ---------- */
 a.btn {
   position: relative;
   display: inline-block;
   margin: 14px 10px 0 0;
-  padding: 11px 20px;
+  padding: 10px 20px;
+  font-size: 0.94rem;
   font-weight: 500;
-  font-size: 0.95rem;
   text-decoration: none;
   color: var(--sheet);
   background: var(--ink);
   border: 1px solid var(--ink);
-  border-radius: var(--radius-s);
+  border-radius: 3px;
   overflow: hidden;
   isolation: isolate;
-  transition: color 220ms ease, border-color 220ms ease;
+  transition: border-color 200ms ease;
 }
-/* a teal sweep fills the button from the left on hover */
 a.btn::before {
   content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--rule);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  position: absolute; inset: 0;
+  background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 260ms cubic-bezier(0.2,0.7,0.2,1);
   z-index: -1;
 }
-a.btn:hover, a.btn:focus-visible { border-color: var(--rule); }
+a.btn:hover, a.btn:focus-visible { border-color: var(--accent); }
 a.btn:hover::before, a.btn:focus-visible::before { transform: scaleX(1); }
 
-.btn.secondary {
-  color: var(--ink);
-  background: transparent;
-  border-color: var(--grid-major);
-}
-.btn.secondary:hover, .btn.secondary:focus-visible { color: var(--sheet); border-color: var(--rule); }
+.btn.secondary { color: var(--ink); background: transparent; border-color: var(--hair); }
+.btn.secondary:hover, .btn.secondary:focus-visible { color: var(--sheet); border-color: var(--accent); }
 
-/* ---------- music page embed ---------- */
 .musescore-embed {
   width: 100%;
   margin-top: 20px;
-  border: 1px solid var(--grid-major);
-  border-radius: var(--radius-s);
+  border: 1px solid var(--hair);
+  border-radius: 3px;
   overflow: hidden;
 }
 
-/* ---------- responsive ---------- */
-@media (max-width: 720px) {
-  .container { margin: 24px 14px 64px; padding: 34px 24px; }
-  .card { padding: 22px 20px; }
-  .nav-links { gap: 22px; justify-content: center; }
-  h2 { font-size: 1.6rem; }
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .readout {
+    top: auto;
+    bottom: clamp(84px, 16vh, 130px);
+    right: clamp(16px, 5vw, 40px);
+    min-width: 0;
+    padding: 14px 16px;
+    font-size: 0.84rem;
+  }
+  .readout .note { display: none; }
+}
+
+@media (max-width: 640px) {
+  .board { height: auto; min-height: 0; }
+  #figure { position: relative; height: 62vh; }
+  .board-name { position: static; padding: 28px 20px 0; max-width: none; }
+  .readout { position: static; margin: 18px 20px 0; }
+  .layers { position: static; padding: 18px 20px 26px; max-width: none; }
+  .cue { display: none; }
+  .container { padding: 48px 20px 80px; }
+  .card { padding: 24px 22px; }
   a.btn { display: block; margin-right: 0; text-align: center; }
 }
 
-/* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
