@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Geometry Lab - Kevin Hu</title>
+  <meta name="description" content="An interactive triangle: drag the vertices and watch the circumcircle, nine-point circle, incircle and Euler line update, with Euler's theorem holding live.">
+  <link rel="stylesheet" href="style.css">
+  <script src="geometry.js" defer></script>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-links">
+      <a href="index.html">Mathematics</a>
+      <a href="music.html">Music &amp; Piano</a>
+      <a href="geometry.html" aria-current="page">Geometry Lab</a>
+    </div>
+  </nav>
+
+  <header class="board" id="board">
+    <canvas id="figure" tabindex="0" role="application"
+            aria-label="Interactive triangle. Drag vertex A, B or C to reshape it and watch the circumcircle, nine-point circle, incircle and Euler line update. Press 1, 2 or 3 to select a vertex, then use the arrow keys to move it."></canvas>
+
+    <div class="board-title">
+      <h1>Geometry Lab</h1>
+      <p>One triangle, five centres, three circles. Every object is recomputed as you move a vertex.</p>
+      <p class="hint">Drag <em>A</em>, <em>B</em> or <em>C</em>. Keyboard: press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd>, then the arrow keys.</p>
+    </div>
+
+    <div class="readout">
+      <h2>Live measurements</h2>
+      <div class="row"><span>R</span><span id="out-R">&mdash;</span></div>
+      <div class="row"><span>r</span><span id="out-r">&mdash;</span></div>
+      <div class="row"><span>OI</span><span id="out-OI">&mdash;</span></div>
+      <div class="row"><span>&radic;(R&sup2; &minus; 2Rr)</span><span id="out-euler">&mdash;</span></div>
+      <div class="row"><span>OG : GN : NH</span><span id="out-ratio">&mdash;</span></div>
+      <p class="note">Two of these never move: <em>OI</em> tracks <em>&radic;(R&sup2;&minus;2Rr)</em>, and O, G, N, H stay in the ratio <em>2 : 1 : 3</em>.</p>
+    </div>
+
+    <div class="layers">
+      <button data-layer="circumcircle">Circumcircle</button>
+      <button data-layer="ninepoint">Nine-point circle</button>
+      <button data-layer="incircle">Incircle</button>
+      <button data-layer="euler">Euler line</button>
+      <button data-layer="medians">Medians</button>
+      <button data-layer="altitudes">Altitudes</button>
+      <button data-layer="contact">Contact triangle</button>
+      <button id="reset">Reset</button>
+    </div>
+
+    <a class="cue" href="#notes">What you are looking at</a>
+  </header>
+
+  <main class="container" id="notes">
+
+    <h2>What you are looking at</h2>
+    <p class="lede">Drag a vertex far enough and the orthocentre leaves the triangle, the circumcentre crosses a side, and the Euler line swings through everything. What does not change is more interesting than what does.</p>
+
+    <h3>The colours</h3>
+    <ul class="key">
+      <li><span class="swatch" style="background:#1b2a2e"></span><span>White: the triangle, and the classical centres O, G and H.</span></li>
+      <li><span class="swatch" style="background:#8fd3e8"></span><span>Cyan: the nine-point circle, its nine points, and the Euler line.</span></li>
+      <li><span class="swatch" style="background:#f2a49c"></span><span>Rose: the incircle, its centre I, and the contact triangle.</span></li>
+      <li><span class="swatch" style="background:#f2d98d"></span><span>Gold: the altitudes and their feet.</span></li>
+    </ul>
+
+    <h3>Why the nine-point circle has nine points</h3>
+    <p>Switch on the nine-point circle and count the cyan dots. Three are the midpoints of the sides, three are the feet of the altitudes, and three are the midpoints of the segments joining each vertex to the orthocentre. Nine points that have no obvious reason to be concyclic, and yet they are, for every triangle you can drag into existence.</p>
+    <p>Its centre <em>N</em> is the midpoint of <em>OH</em>, and its radius is exactly half the circumradius. Watch those two facts survive as you deform the triangle.</p>
+
+    <h3>Euler's theorem, live</h3>
+    <p>The panel shows the distance <em>OI</em> between the circumcentre and the incentre alongside <em>&radic;(R&sup2;&minus;2Rr)</em>. They agree to three decimal places no matter where you drag the vertices. That is Euler's theorem, and it has a corollary you can also see: since <em>OI&sup2;</em> cannot be negative, <em>R</em> is always at least <em>2r</em>, with equality only for the equilateral triangle. Try to make the two circles concentric and you will find the triangle forced into that one shape.</p>
+
+    <h3>Where this comes from</h3>
+    <p>These configurations are the subject of my monograph, which treats them as a systematic toolkit rather than a gallery of curiosities.</p>
+    <a class="btn" href="index.html">Back to the mathematics page</a>
+    <a class="btn secondary" href="cross-ratios.pdf" target="_blank">Sample chapter: Cross Ratios</a>
+
+  </main>
+
+</body>
+</html>
