@@ -3,56 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kevin Hu - Mathematics & Music</title>
+  <title>Kevin Hu - Mathematics</title>
   <link rel="stylesheet" href="style.css">
-  <script src="geometry.js" defer></script>
 </head>
 <body>
 
-  <!-- ===================== the board ===================== -->
-  <header class="board" id="board">
-    <canvas id="figure" tabindex="0" role="application"
-            aria-label="Interactive triangle. Drag vertex A, B or C to reshape it and watch the circumcircle, nine-point circle, incircle and Euler line update. Press 1, 2 or 3 to select a vertex, then use the arrow keys."></canvas>
-
-    <div class="board-name">
-      <h1>Kevin Hu</h1>
-      <p>Sixth-form student at Dubai College, BMO1 silver medallist, and author of <em>Beyond the Incenter</em>.</p>
-      <p class="hint">Drag <em>A</em>, <em>B</em> or <em>C</em> to reshape the triangle. Keyboard: press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd>, then the arrow keys.</p>
-    </div>
-
-    <div class="readout">
-      <h2>Live measurements</h2>
-      <div class="row"><span>R</span><span id="out-R">&mdash;</span></div>
-      <div class="row"><span>r</span><span id="out-r">&mdash;</span></div>
-      <div class="row"><span>OI</span><span id="out-OI">&mdash;</span></div>
-      <div class="row"><span>&radic;(R&sup2; &minus; 2Rr)</span><span id="out-euler">&mdash;</span></div>
-      <div class="row"><span>OG : GN : NH</span><span id="out-ratio">&mdash;</span></div>
-      <p class="note">The last two rows never change: <em>OI</em> matches <em>&radic;(R&sup2;&minus;2Rr)</em> by Euler's theorem, and O, G, N, H always divide in <em>2 : 1 : 3</em>.</p>
-    </div>
-
-    <div class="layers">
-      <button data-layer="circumcircle">Circumcircle</button>
-      <button data-layer="ninepoint">Nine-point circle</button>
-      <button data-layer="incircle">Incircle</button>
-      <button data-layer="euler">Euler line</button>
-      <button data-layer="medians">Medians</button>
-      <button data-layer="altitudes">Altitudes</button>
-      <button data-layer="contact">Contact triangle</button>
-      <button id="reset">Reset</button>
-    </div>
-
-    <a class="cue" href="#work">The work below</a>
-  </header>
-
-  <!-- ===================== the paper ===================== -->
   <nav>
     <div class="nav-links">
-      <a href="index.html">Mathematics</a>
+      <a href="index.html" aria-current="page">Mathematics</a>
       <a href="music.html">Music &amp; Piano</a>
+      <a href="geometry.html">Geometry Lab</a>
     </div>
   </nav>
 
-  <main class="container" id="work">
+  <main class="container">
+
+    <h1>Kevin Hu</h1>
+    <p class="lede">I am a sixth-form student at Dubai College, a BMO1 silver medallist, and an aspiring mathematician with a deep interest in Euclidean and projective geometry. This site hosts my textbook sample alongside original mock olympiad papers and solutions.</p>
 
     <h2>Beyond the Incenter</h2>
     <div class="card">
@@ -78,6 +45,12 @@
       <p>I wrote <em>Beyond the Incenter</em> to fix this specific gap. There are very few resources that bridge the gap from A-Level math to that elite standard. The goal of this book is to show that Olympiad geometry isn't about guessing "lucky" lines. By breaking down methods like projective geometry, radical axes, and spiral similarity, it provides students with a reliable, systematic approach to problems that otherwise look impossible.</p>
 
       <a class="btn secondary" href="cross-ratios.pdf" target="_blank">Read the sample chapter: Cross Ratios</a>
+    </div>
+
+    <div class="card board-card">
+      <h3>Try the configurations yourself</h3>
+      <p>The Geometry Lab puts one triangle on a board with its five centres, three circles and the Euler line. Drag a vertex and watch <em>OI</em> stay equal to <em>&radic;(R&sup2;&minus;2Rr)</em>, whatever shape you force the triangle into.</p>
+      <a class="btn" href="geometry.html">Open the Geometry Lab</a>
     </div>
 
     <h2>Oxbridge admissions preparation</h2>
