@@ -9,34 +9,68 @@
 </head>
 <body>
 
+  <!-- ===================== the board ===================== -->
+  <header class="board" id="board">
+    <canvas id="figure" tabindex="0" role="application"
+            aria-label="Interactive triangle. Drag vertex A, B or C to reshape it and watch the circumcircle, nine-point circle, incircle and Euler line update. Press 1, 2 or 3 to select a vertex, then use the arrow keys."></canvas>
+
+    <div class="board-name">
+      <h1>Kevin Hu</h1>
+      <p>Sixth-form student at Dubai College, BMO1 silver medallist, and author of <em>Beyond the Incenter</em>.</p>
+      <p class="hint">Drag <em>A</em>, <em>B</em> or <em>C</em> to reshape the triangle. Keyboard: press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd>, then the arrow keys.</p>
+    </div>
+
+    <div class="readout">
+      <h2>Live measurements</h2>
+      <div class="row"><span>R</span><span id="out-R">&mdash;</span></div>
+      <div class="row"><span>r</span><span id="out-r">&mdash;</span></div>
+      <div class="row"><span>OI</span><span id="out-OI">&mdash;</span></div>
+      <div class="row"><span>&radic;(R&sup2; &minus; 2Rr)</span><span id="out-euler">&mdash;</span></div>
+      <div class="row"><span>OG : GN : NH</span><span id="out-ratio">&mdash;</span></div>
+      <p class="note">The last two rows never change: <em>OI</em> matches <em>&radic;(R&sup2;&minus;2Rr)</em> by Euler's theorem, and O, G, N, H always divide in <em>2 : 1 : 3</em>.</p>
+    </div>
+
+    <div class="layers">
+      <button data-layer="circumcircle">Circumcircle</button>
+      <button data-layer="ninepoint">Nine-point circle</button>
+      <button data-layer="incircle">Incircle</button>
+      <button data-layer="euler">Euler line</button>
+      <button data-layer="medians">Medians</button>
+      <button data-layer="altitudes">Altitudes</button>
+      <button data-layer="contact">Contact triangle</button>
+      <button id="reset">Reset</button>
+    </div>
+
+    <a class="cue" href="#work">The work below</a>
+  </header>
+
+  <!-- ===================== the paper ===================== -->
   <nav>
     <div class="nav-links">
       <a href="index.html">Mathematics</a>
-      <a href="music.html">Music & Piano</a>
+      <a href="music.html">Music &amp; Piano</a>
     </div>
   </nav>
 
-  <div class="container">
-    <h1>Kevin Hu</h1>
-    <p>I am a sixth-form student at Dubai College, a BMO1 Silver medalist, and an aspiring mathematician with a deep interest in Euclidean and projective geometry. This repository hosts my textbook sample alongside original mock Olympiad papers and solutions.</p>
+  <main class="container" id="work">
 
-    <h2>Featured Publication</h2>
+    <h2>Beyond the Incenter</h2>
     <div class="card">
-      <h3>Beyond the Incenter: A Modern Monograph on Olympiad Geometry</h3>
+      <h3>A modern monograph on olympiad geometry</h3>
 
-      <img src="cover-mockup.png" alt="Beyond the Incenter Book Cover">
+      <img src="cover-mockup.png" alt="Beyond the Incenter book cover">
 
-      <div style="text-align: center; margin-bottom: 20px;">
-        <a class="btn" href="https://www.amazon.co.uk/dp/B0HCDN9VFL" target="_blank">Buy the paperback on Amazon</a>
-        <a class="btn" href="https://www.amazon.co.uk/dp/B0HCDN9VFL" target="_blank">Buy the Kindle edition on Amazon</a>
+      <div style="text-align:center">
+        <a class="btn" href="https://www.amazon.co.uk/dp/B0HCDN9VFL" target="_blank">Buy the paperback</a>
+        <a class="btn" href="https://www.amazon.co.uk/dp/B0HCDN9VFL" target="_blank">Buy the Kindle edition</a>
       </div>
 
-      <h4>About the Monograph</h4>
+      <h4>About the monograph</h4>
       <p>In competitive mathematics, geometry is often perceived by students as a chaotic collection of messy intersections and phantom points, where auxiliary lines and constructions occur purely by luck. <em>Beyond the Incenter</em> dismantles this misconception, presenting synthetic geometry as a rigorous, systematic, and highly structured discipline.</p>
 
-      <p>Authored for the ambitious student bridging the gap between standard high school curricula and elite-level competitions, this textbook synthesizes classical theorems with modern methods. From the foundational properties of the triangle’s five centers to advanced topics like projective geometry and spiral similarity, the text guides readers through the exact techniques required to conquer IMO-caliber configurations.</p>
+      <p>Authored for the ambitious student bridging the gap between standard high school curricula and elite-level competitions, this textbook synthesizes classical theorems with modern methods. From the foundational properties of the triangle's five centers to advanced topics like projective geometry and spiral similarity, the text guides readers through the exact techniques required to conquer IMO-caliber configurations.</p>
 
-      <h4>Why I Wrote This Book: The Geometry Gap</h4>
+      <h4>Why I wrote this book: the geometry gap</h4>
       <p>Having analysed UKMT markers' reports from the last decade, something alarms me: geometry is consistently the least-attempted and most poorly answered section. The markers explicitly note that geometry questions are "one of the least attempted by candidates," and constantly complain that students rely on "algebraic proof with no reference to the geometrical justifications."</p>
 
       <p>The reason for this is simple: modern high school syllabuses have largely stripped out classical geometry. I see this at my own school. Out of over 1,000 students, only three know Menelaus's Theorem, and exactly two know how to use a complete quadrilateral. Because students lack these core geometric tools, they default to Cartesian coordinate or trigonometric bashes in competitions. As the markers point out, this usually leads to pages of algebra, which are highly prone to errors.</p>
@@ -46,9 +80,9 @@
       <a class="btn secondary" href="cross-ratios.pdf" target="_blank">Read the sample chapter: Cross Ratios</a>
     </div>
 
-    <h2>Oxbridge Admissions Preparation</h2>
+    <h2>Oxbridge admissions preparation</h2>
     <div class="card">
-      <h3>The Hu Collection</h3>
+      <h3>The HU Collection</h3>
       <p>Short, original, elite-level mock examinations with detailed solutions designed to train candidates to develop a more intricate 'eye' and attention to detail. These problems, which are curated for TMUA, MAT, and Oxbridge interview preparation, bypass standard algorithmic testing to focus on topics rarely taught in the standard curriculum to bridge the gap between A-level and University mathematics.</p>
       <a class="btn" href="Hu_Collection_Part_1.pdf" target="_blank">HU Collection Part 1</a>
       <a class="btn" href="Hu_Collection_Part_2.pdf" target="_blank">HU Collection Part 2</a>
@@ -56,29 +90,30 @@
       <a class="btn" href="hu_mock_a_p2_with_solutions.pdf" target="_blank">HU Mock TMUA Paper 2</a>
     </div>
 
-    <h2>Olympiad Papers</h2>
+    <h2>Olympiad papers</h2>
     <div class="card">
       <h3>Kevin's Mathematical Olympiad</h3>
       <p>Original mock papers designed to test advanced problem-solving skills, focusing on synthetic geometry, number theory, algebra, and combinatorics, the four pillars of Olympiad mathematics.</p>
-      <a class="btn" href="Mock_BMO.pdf" target="_blank">KMO Problem Set</a>
-      <a class="btn secondary" href="KMO_solutions.pdf" target="_blank">KMO Solutions</a>
+      <a class="btn" href="Mock_BMO.pdf" target="_blank">KMO problem set</a>
+      <a class="btn secondary" href="KMO_solutions.pdf" target="_blank">KMO solutions</a>
     </div>
 
     <div class="card">
-      <h3>Mock SMC & S(A)MC</h3>
+      <h3>Mock SMC and S(A)MC</h3>
       <p>Practice materials and rigorous solutions tailored for the UKMT's Senior Maths Challenge, the AMC, AIME, and more.</p>
       <a class="btn" href="Mock_UKMT_SMC.pdf" target="_blank">Mock UKMT SMC</a>
-      <a class="btn secondary" href="S(A)MC_Solutions.pdf" target="_blank">S(A)MC Solutions</a>
-      <a class="btn secondary" href="PC.pdf" target="_blank">Purple Comet! 2026 HS Solutions</a>
+      <a class="btn secondary" href="S(A)MC_Solutions.pdf" target="_blank">S(A)MC solutions</a>
+      <a class="btn secondary" href="PC.pdf" target="_blank">Purple Comet 2026 HS solutions</a>
     </div>
 
     <div class="card">
-      <h3>Advanced Maths Olympiad Solutions</h3>
+      <h3>Advanced olympiad solutions</h3>
       <p>Original solutions for the British Mathematical Olympiad, UK's national math competition, which serves as a critical selection tool for the UK's IMO team, and ultimately, the IMO, the most challenging math competition for high schoolers.</p>
-      <a class="btn" href="BMO2_2011_Sol.pdf" target="_blank">BMO2 2011 Solutions</a>
+      <a class="btn" href="BMO2_2011_Sol.pdf" target="_blank">BMO2 2011 solutions</a>
       <a class="btn" href="ISL_2025_sol.pdf" target="_blank">IMO Shortlist 2025 G1-3</a>
     </div>
-  </div>
+
+  </main>
 
 </body>
 </html>
