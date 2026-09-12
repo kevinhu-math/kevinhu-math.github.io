@@ -1,151 +1,305 @@
-/* Import Elegant Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap');
+/* ==========================================================================
+   Kevin Hu, kevinhu-math.github.io
+   Theme: "the construction sheet". Graph paper, ink, and construction lines.
+   A live triangle with its incircle, circumcircle, nine-point circle and
+   Euler line is drawn behind the page by geometry.js and follows the cursor.
+   ========================================================================== */
 
-/* Animated Gradient Background */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+/* ---------- tokens ---------- */
+:root {
+  --paper:      #f6f7f4;   /* page, a cool off-white, not cream */
+  --sheet:      #ffffff;   /* the container */
+  --grid:       rgba(20, 33, 61, 0.07);
+  --grid-major: rgba(20, 33, 61, 0.13);
+  --ink:        #14213d;   /* navy ink for headings and body */
+  --ink-soft:   #3b4763;
+  --rule:       #0e7c86;   /* teal construction line, the primary accent */
+  --rule-soft:  rgba(14, 124, 134, 0.14);
+  --pencil:     #b23a2f;   /* pencil red, reserved for the incircle only */
+  --radius-s:   4px;
+  --radius-m:   10px;
+  --measure:    68ch;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'IBM Plex Sans', system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:      #0f1524;
+    --sheet:      #151d31;
+    --grid:       rgba(214, 224, 240, 0.06);
+    --grid-major: rgba(214, 224, 240, 0.11);
+    --ink:        #e7ebf3;
+    --ink-soft:   #b3bccf;
+    --rule:       #4fc3cd;
+    --rule-soft:  rgba(79, 195, 205, 0.16);
+    --pencil:     #ef7d72;
+  }
+}
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
 body {
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(-45deg, #f5f7fa, #c3cfe2, #e0c3fc, #8ec5fc);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-    color: #333;
-    min-height: 100vh;
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--ink);
+  background-color: var(--paper);
+  /* graph paper: fine 24px grid, heavier line every 120px */
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  background-position: -1px -1px;
 }
 
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* the geometry canvas, injected by geometry.js */
+#geo-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
 }
 
-/* Frosted Glass Navigation Bar */
+::selection { background: var(--rule-soft); color: var(--ink); }
+
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--rule);
+  outline-offset: 3px;
+}
+
+/* ---------- navigation ---------- */
 nav {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 15px 0;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--sheet) 82%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--grid-major);
 }
 
 .nav-links {
-    max-width: 850px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    gap: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  gap: 36px;
 }
 
 .nav-links a {
-    text-decoration: none;
-    color: #03045E;
-    font-weight: 600;
-    font-size: 1.1em;
-    transition: color 0.3s, transform 0.2s;
+  position: relative;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 4px 0;
 }
 
-.nav-links a:hover {
-    color: #00B4D8;
-    transform: translateY(-2px);
+/* underline drawn like a ruler stroke, from left to right */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -2px;
+  height: 2px;
+  background: var(--rule);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 260ms ease;
 }
+.nav-links a:hover::after,
+.nav-links a:focus-visible::after { transform: scaleX(1); }
 
-/* Main Container Styling */
+/* ---------- the sheet ---------- */
 .container {
-    max-width: 850px;
-    margin: 50px auto;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    padding: 50px;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255,255,255,0.5);
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 56px auto 96px;
+  padding: 56px 64px;
+  background: var(--sheet);
+  border: 1px solid var(--grid-major);
+  border-radius: var(--radius-m);
+  box-shadow:
+    0 1px 0 var(--grid-major),
+    0 24px 60px -30px rgba(20, 33, 61, 0.35);
 }
 
-/* Typography */
+/* corner tick marks, like registration marks on a drawing sheet */
+.container::before,
+.container::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--rule);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+.container::before { top: 14px; left: 14px; border-top-width: 1.5px; border-left-width: 1.5px; }
+.container::after  { bottom: 14px; right: 14px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+/* ---------- typography ---------- */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
 h1 {
-    font-family: 'Lora', serif;
-    color: #03045E;
-    border-bottom: 3px solid #0077B6;
-    padding-bottom: 15px;
-    font-size: 3em;
-    margin-top: 0;
+  font-size: clamp(2.6rem, 6vw, 3.6rem);
+  font-variation-settings: 'opsz' 144;
+  margin: 0 0 0.35em;
+  padding-bottom: 0.3em;
+  /* a compass-arc flourish under the name */
+  background:
+    radial-gradient(circle at 0 100%, transparent 58px, var(--rule) 58px, var(--rule) 60px, transparent 60px)
+    no-repeat left bottom / 120px 60px;
+  border-bottom: 1px solid var(--grid-major);
 }
 
 h2 {
-    font-family: 'Lora', serif;
-    color: #0077B6;
-    margin-top: 45px;
-    font-size: 2em;
+  font-size: 1.9rem;
+  margin: 2.6em 0 0.8em;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+/* a short construction line leads into each section heading */
+h2::before {
+  content: '';
+  flex: 0 0 28px;
+  height: 1.5px;
+  background: var(--rule);
+  transform: translateY(-0.35em);
 }
 
-p { 
-    line-height: 1.8; 
-    font-size: 1.1em; 
-    color: #444;
-}
+h3 { font-size: 1.35rem; margin: 0 0 0.4em; }
+h4 { font-size: 1.05rem; margin: 1.6em 0 0.4em; font-style: italic; font-weight: 400; color: var(--ink-soft); }
 
-/* Resource & Music Cards */
+p {
+  max-width: var(--measure);
+  margin: 0 0 1.1em;
+  color: var(--ink-soft);
+}
+p em { font-style: italic; color: var(--ink); }
+
+/* ---------- cards ---------- */
 .card {
-    background: white;
-    border-left: 5px solid #00B4D8;
-    padding: 30px;
-    border-radius: 8px;
-    margin-bottom: 30px;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  position: relative;
+  margin: 0 0 28px;
+  padding: 30px 34px;
+  background: var(--sheet);
+  border: 1px solid var(--grid-major);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  transition: border-color 220ms ease;
 }
 
-.card:hover { 
-    transform: translateY(-5px); 
-    box-shadow: 0 15px 35px rgba(0,0,0,0.08); 
+/* a compass arc faintly drawn in the corner; it completes on hover */
+.card::before {
+  content: '';
+  position: absolute;
+  top: -70px;
+  right: -70px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 1.5px solid var(--rule);
+  opacity: 0.18;
+  clip-path: polygon(0 0, 0 0, 0 0);
+  transition: clip-path 420ms ease, opacity 220ms ease;
+  pointer-events: none;
+}
+.card:hover { border-color: var(--rule); }
+.card:hover::before {
+  opacity: 0.45;
+  clip-path: polygon(0 100%, 0 0, 100% 0, 100% 100%);
 }
 
-.card h3 { 
-    margin-top: 0; 
-    color: #023E8A; 
-    font-family: 'Lora', serif;
-    font-size: 1.5em;
+.card img {
+  max-width: 250px;
+  display: block;
+  margin: 22px auto;
+  border: 1px solid var(--grid-major);
+  box-shadow: 0 12px 30px -16px rgba(20, 33, 61, 0.5);
+  transform: rotate(-1.2deg);
+  transition: transform 300ms ease;
 }
+.card:hover img { transform: rotate(0deg); }
 
-/* Buttons */
+/* ---------- buttons ---------- */
 a.btn {
-    display: inline-block;
-    background: #0077B6;
-    color: white;
-    padding: 12px 24px;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
-    margin-top: 15px;
-    margin-right: 12px;
-    transition: all 0.3s ease;
-    font-size: 0.95em;
-    box-shadow: 0 4px 10px rgba(0, 119, 182, 0.2);
+  position: relative;
+  display: inline-block;
+  margin: 14px 10px 0 0;
+  padding: 11px 20px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-decoration: none;
+  color: var(--sheet);
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 220ms ease, border-color 220ms ease;
 }
-
-a.btn:hover { 
-    background: #03045E; 
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(3, 4, 94, 0.3);
+/* a teal sweep fills the button from the left on hover */
+a.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--rule);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  z-index: -1;
 }
+a.btn:hover, a.btn:focus-visible { border-color: var(--rule); }
+a.btn:hover::before, a.btn:focus-visible::before { transform: scaleX(1); }
 
 .btn.secondary {
-    background: #e0fbfc;
-    color: #03045E;
+  color: var(--ink);
+  background: transparent;
+  border-color: var(--grid-major);
 }
+.btn.secondary:hover, .btn.secondary:focus-visible { color: var(--sheet); border-color: var(--rule); }
 
-.btn.secondary:hover {
-    background: #90e0ef;
-}
-
-/* Musescore iframe container */
+/* ---------- music page embed ---------- */
 .musescore-embed {
-    width: 100%;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  width: 100%;
+  margin-top: 20px;
+  border: 1px solid var(--grid-major);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 720px) {
+  .container { margin: 24px 14px 64px; padding: 34px 24px; }
+  .card { padding: 22px 20px; }
+  .nav-links { gap: 22px; justify-content: center; }
+  h2 { font-size: 1.6rem; }
+  a.btn { display: block; margin-right: 0; text-align: center; }
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
 }
